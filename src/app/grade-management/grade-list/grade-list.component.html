@@ -1,1 +1,90 @@
-<p>grade-list works!</p>
+<mat-card class="grade-card">
+  <mat-card-header>
+    <mat-toolbar color="accent">
+      <span>Grade List</span>
+      <span class="spacer"></span>
+      <button mat-button routerLink="/">Back</button>
+    </mat-toolbar>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" class="form-container">
+      <!-- Student ID -->
+      <mat-form-field appearance="fill" class="form-field">
+        <input matInput placeholder="Student ID" formControlName="studentId" type="number" required>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <input matInput placeholder="Student Name" formControlName="studentName" type="text" required>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <input matInput placeholder="Student Class" formControlName="studentClass" type="text" required>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">View Result</button>
+    </form>
+
+    <mat-divider></mat-divider>
+
+    <table mat-table [dataSource]="grades" class="mat-elevation-z8">
+      <ng-container matColumnDef="subject">
+        <th mat-header-cell *matHeaderCellDef> Subject </th>
+        <td mat-cell *matCellDef="let grade"> {{grade.subject}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="score">
+        <th mat-header-cell *matHeaderCellDef> Score </th>
+        <td mat-cell *matCellDef="let grade"> {{grade.score}} </td>
+      </ng-container>
+    
+    
+      <ng-container matColumnDef="grade">
+        <th mat-header-cell *matHeaderCellDef> Grade </th>
+        <td mat-cell *matCellDef="let grade"> {{grade.grade}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="note">
+        <th mat-header-cell *matHeaderCellDef> Note </th>
+        <td mat-cell *matCellDef="let grade"> {{grade.note}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let grade">
+          <button mat-button (click)="editGrade(grade)">Edit</button>
+          <button mat-button color="warn" (click)="deleteGrade(grade.studentId, grade.subject)">Delete</button>
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div *ngIf="editingGrade">
+      <h3>Edit Grade</h3>
+      <form [formGroup]="editForm" (ngSubmit)="onUpdate()" class="form-container">
+        <mat-form-field appearance="fill" class="form-field">
+          <input matInput placeholder="Student ID" formControlName="studentId" type="number" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <input matInput placeholder="Subject" formControlName="subject" type="text" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <input matInput placeholder="Score" formControlName="score" type="number" required>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-select placeholder="Grade" formControlName="grade" required>
+            <mat-option *ngFor="let grade of gradeOptions" [value]="grade">
+              {{ grade }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <textarea matInput placeholder="Note" formControlName="note"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Update Record</button>
+      </form>
+    </div>
+
+    <div *ngIf="message" class="message">
+      <p>{{ message }}</p>
+    </div>
+  </mat-card-content>
+</mat-card>
