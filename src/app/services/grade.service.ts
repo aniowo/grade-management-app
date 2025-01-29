@@ -1,26 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export class Grade {
-  studentId?: number;
-  studentName: string;
-  studentClass?: string;
-  subject: string;
-  score: number;
-  gradeLetter: string;
-  note?: string;
-
-  constructor(studentId: number, studentName: string, studentClass: string, subject: string, score: number, gradeLetter: string, note?: string) {
-    this.studentId = studentId;
-    this.studentName = studentName;
-    this.studentClass = studentClass;
-    this.subject = subject;
-    this.score = score;
-    this.gradeLetter = gradeLetter;
-    this.note = note;
-  }
-}
+import { Grade } from '../models/grade.model';
+import { Student } from '../models/student.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,9 +11,13 @@ export class GradeService {
   private baseUrl = 'https://localhost:7009/api/Grades';
 
   constructor(private http: HttpClient) {}
-  
+
   addGrade(grade: any): Observable<any> {
     return this.http.post<any>(this.baseUrl, grade);
+  }
+
+  getStudentById(studentId: number): Observable<Student> {
+    return this.http.get<Student>(`${this.baseUrl}/students/${studentId}`);
   }
 
   getGradesByStudentId(studentId: number): Observable<Grade[]> {

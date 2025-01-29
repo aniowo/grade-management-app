@@ -11,14 +11,14 @@
       <mat-form-field appearance="fill" class="form-field">
         <input matInput placeholder="Student ID" formControlName="studentId" type="number" required>
       </mat-form-field>
-      <mat-form-field appearance="fill" class="form-field">
-        <input matInput placeholder="Student Name" formControlName="studentName" type="text" required>
-      </mat-form-field>
-      <mat-form-field appearance="fill" class="form-field">
-        <input matInput placeholder="Student Class" formControlName="studentClass" type="text" required>
-      </mat-form-field>
       <button mat-raised-button color="primary" type="submit">View Result</button>
     </form>
+
+
+    <div *ngIf="student">
+      <p><strong>Student Name:</strong> {{ student.studentName }}</p>
+      <p><strong>Student Class:</strong> {{ student.studentClass }}</p>
+    </div>
 
     <mat-divider></mat-divider>
 

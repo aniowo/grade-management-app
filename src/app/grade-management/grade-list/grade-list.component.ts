@@ -12,6 +12,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { Grade } from '../../models/grade.model';
+import { Student } from '../../models/student.model';
 
 @Component({
   selector: 'app-grade-list',
@@ -37,6 +39,7 @@ export class GradeListComponent{
   studentForm: FormGroup;
   editForm: FormGroup;
   grades: any[] = [];
+  student: Student | null = null;
   message: string | null = null;
   displayedColumns: string[] = ['subject', 'score', 'grade', 'note', 'actions'];
   editingGrade: any = null;
@@ -44,10 +47,7 @@ export class GradeListComponent{
 
   constructor(private fb: FormBuilder, private gradeService: GradeService) {
     this.studentForm = this.fb.group({
-      studentId: ['', Validators.required],
-      studentName: ['', Validators.required],
-      studentClass : ['', Validators.required]
-
+      studentId: ['', Validators.required]
     });
 
     this.editForm = this.fb.group({
@@ -59,16 +59,22 @@ export class GradeListComponent{
     });
   }
 
+ 
   onSubmit(): void {
     if (this.studentForm.valid) {
       const studentId = this.studentForm.value.studentId;
-      this.gradeService.getGradesByStudentId(studentId).subscribe({
-        next: (grades) => {
-          this.message = 'Grades fetched successfully';
-          this.grades = grades;
+
+      this.grades = [];
+      this.student = null;
+      this.message = null;
+
+      this.gradeService.getStudentById(studentId).subscribe({
+        next: (student) => {
+          this.student = student;
+          this.loadGrades(studentId);
         },
         error: (error) => {
-          this.message = 'Error fetching grades';
+          this.message = 'Error fetching student information';
         }
       });
     } else {
@@ -76,13 +82,27 @@ export class GradeListComponent{
     }
   }
 
-  editGrade(grade: any): void {
+  loadGrades(studentId: number): void {
+    this.gradeService.getGradesByStudentId(studentId).subscribe({
+      next: (grades) => {
+        this.grades = grades;
+        if (grades.length === 0) {
+          this.message = 'No grades found for this student';
+        } else {
+          this.message = 'Grades fetched successfully';
+        }
+      },
+      error: (error) => {
+        this.message = 'Error fetching grades';
+      }
+    });
+  }
+
+  editGrade(grade: Grade): void {
     this.editingGrade = grade;
     this.editForm.patchValue({
-      studentId: grade.studentId,
-      subject: grade.subject,
       score: grade.score,
-      grade: grade.grade,
+      gradeLetter: grade.gradeLetter,
       note: grade.note
     });
   }
@@ -92,10 +112,10 @@ export class GradeListComponent{
       const studentId = this.editingGrade.studentId;
       const subject = this.editingGrade.subject;
       const { score, gradeLetter, note } = this.editForm.value;
-      this.gradeService.updateGradeByStudentIdAndSubject(studentId, subject, score, gradeLetter, note).subscribe({
+      this.gradeService.updateGradeByStudentIdAndSubject(studentId!, subject, score, gradeLetter, note).subscribe({
         next: (response) => {
           this.message = 'Grade updated successfully';
-          this.onSubmit(); 
+          this.loadGrades(studentId!);
           this.editingGrade = null;
         },
         error: (error) => {
@@ -108,8 +128,14 @@ export class GradeListComponent{
   }
 
   deleteGrade(studentId: number, subject: string): void {
-    this.gradeService.deleteGradeByStudentIdAndSubject(studentId, subject).subscribe(() => {
-      this.onSubmit(); 
+    this.gradeService.deleteGradeByStudentIdAndSubject(studentId, subject).subscribe({
+      next: () => {
+        this.message = 'Grade deleted successfully';
+        this.loadGrades(studentId);
+      },
+      error: (error) => {
+        this.message = 'Error deleting grade';
+      }
     });
   }
 }
