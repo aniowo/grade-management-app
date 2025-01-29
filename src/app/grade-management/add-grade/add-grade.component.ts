@@ -45,7 +45,7 @@ export class AddGradeComponent {
       studentClass: ['', Validators.required],
       subject: ['', Validators.required],
       score: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
-      grade: ['', Validators.required],
+      gradeLetter: ['', Validators.required],
       note: ['']
     });
   }
@@ -53,7 +53,21 @@ export class AddGradeComponent {
   onSubmit() {
     if (this.gradeForm.valid) {
       const formData = this.gradeForm.value;
-      this.gradeService.addGrade(formData).subscribe({
+      const payload = {
+        subject: formData.subject,
+        score: formData.score,
+        gradeLetter: formData.gradeLetter,
+        note: formData.note,
+        studentId: formData.studentId,
+        student: {
+          studentId: formData.studentId,  
+          studentName: formData.studentName, 
+          studentClass: formData.studentClass, 
+          grades: formData.grades || []  
+        }
+      };
+
+      this.gradeService.addGrade(payload).subscribe({
         next: (response) => {
           this.message = 'Grade added successfully';
           this.gradeForm.reset();

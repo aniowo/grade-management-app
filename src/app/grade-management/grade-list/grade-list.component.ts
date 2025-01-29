@@ -54,7 +54,7 @@ export class GradeListComponent{
       studentId: ['', Validators.required],
       subject: ['', Validators.required],
       score: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
-      grade: ['', Validators.required],
+      gradeLetter: ['', Validators.required],
       note: ['']
     });
   }
@@ -88,9 +88,11 @@ export class GradeListComponent{
   }
 
   onUpdate(): void {
-    if (this.editForm.valid) {
-      const updatedGrade = this.editForm.value;
-      this.gradeService.updateGradeByStudentIdAndSubject(updatedGrade.studentId, updatedGrade.subject, updatedGrade).subscribe({
+    if (this.editForm.valid && this.editingGrade) {
+      const studentId = this.editingGrade.studentId;
+      const subject = this.editingGrade.subject;
+      const { score, gradeLetter, note } = this.editForm.value;
+      this.gradeService.updateGradeByStudentIdAndSubject(studentId, subject, score, gradeLetter, note).subscribe({
         next: (response) => {
           this.message = 'Grade updated successfully';
           this.onSubmit(); 

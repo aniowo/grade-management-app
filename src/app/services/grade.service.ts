@@ -3,18 +3,21 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export class Grade {
-  id?: number;
+  studentId?: number;
   studentName: string;
+  studentClass?: string;
   subject: string;
   score: number;
-  grade: string;
+  gradeLetter: string;
   note?: string;
 
-  constructor(studentName: string, subject: string, score: number, grade: string, note?: string) {
+  constructor(studentId: number, studentName: string, studentClass: string, subject: string, score: number, gradeLetter: string, note?: string) {
+    this.studentId = studentId;
     this.studentName = studentName;
+    this.studentClass = studentClass;
     this.subject = subject;
     this.score = score;
-    this.grade = grade;
+    this.gradeLetter = gradeLetter;
     this.note = note;
   }
 }
@@ -23,33 +26,23 @@ export class Grade {
   providedIn: 'root'
 })
 export class GradeService {
-  private baseUrl = 'https://your-api-endpoint.com/api/grades'; // Replace with your actual API endpoint
+  private baseUrl = 'https://localhost:7009/api/Grades';
 
   constructor(private http: HttpClient) {}
-
-  /*getGrades(): Observable<Grade[]> {
-    return this.http.get<Grade[]>(this.baseUrl);
-  }
-
-  updateGrade(id: number, grade: Grade): Observable<Grade> {
-    return this.http.put<Grade>(`${this.baseUrl}/${id}`, grade);
-  }
-
-  deleteGrade(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
-  }*/
-
-  addGrade(grade: Grade): Observable<Grade> {
-    return this.http.post<Grade>(this.baseUrl, grade);
+  
+  addGrade(grade: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, grade);
   }
 
   getGradesByStudentId(studentId: number): Observable<Grade[]> {
     return this.http.get<Grade[]>(`${this.baseUrl}/student/${studentId}`);
   }
 
-  updateGradeByStudentIdAndSubject(studentId: number, subject: string, grade: Grade): Observable<Grade> {
-    return this.http.put<Grade>(`${this.baseUrl}/student/${studentId}/subject/${subject}`, grade);
+  updateGradeByStudentIdAndSubject(studentId: number, subject: string, score: number, gradeLetter: string, note: string): Observable<any> {
+    const updateGradeDto = { score, gradeLetter, note };
+    return this.http.put<any>(`${this.baseUrl}/student/${studentId}/subject/${subject}`, updateGradeDto);
   }
+
 
   deleteGradeByStudentIdAndSubject(studentId: number, subject: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/student/${studentId}/subject/${subject}`);

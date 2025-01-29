@@ -8,7 +8,6 @@
   </mat-card-header>
   <mat-card-content>
     <form [formGroup]="gradeForm" (ngSubmit)="onSubmit()" class="form-container">
-      <!-- Student ID -->
       <mat-form-field appearance="fill" class="form-field">
         <input matInput placeholder="Student ID" formControlName="studentId" type="number" required>
       </mat-form-field>
@@ -25,9 +24,9 @@
         <input matInput placeholder="Score" formControlName="score" type="number" required>
       </mat-form-field>
       <mat-form-field appearance="fill" class="form-field">
-        <mat-select placeholder="Grade" formControlName="grade" required>
-          <mat-option *ngFor="let grade of grades" [value]="grade">
-            {{ grade }}
+        <mat-select placeholder="Grade" formControlName="gradeLetter" required>
+          <mat-option *ngFor="let gradeLetter of grades" [value]="gradeLetter">
+            {{ gradeLetter }}
           </mat-option>
         </mat-select>
       </mat-form-field>
